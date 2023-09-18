@@ -1,0 +1,37 @@
+{
+  "name": "zagros",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "bun run build.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/00-team/zagros.git"
+  },
+  "author": "00 Team",
+  "license": "GPL-v3",
+  "bugs": {
+    "url": "https://github.com/00-team/zagros/issues"
+  },
+  "homepage": "https://github.com/00-team/zagros#readme",
+  "dependencies": {
+    "solid-js": "latest"
+  },
+  "devDependencies": {
+    "@babel/core": "latest",
+    "@babel/preset-env": "latest",
+    "@babel/preset-typescript": "latest",
+    "@trivago/prettier-plugin-sort-imports": "latest",
+    "@types/babel__core": "^7.20.2",
+    "@types/chrome": "latest",
+    "@types/glob": "latest",
+    "@types/loadable__component": "latest",
+    "@types/webpack-bundle-analyzer": "latest",
+    "babel-loader": "latest",
+    "babel-preset-solid": "latest",
+    "bun-types": "latest",
+    "sass-embedded": "^1.67.0",
+    "typescript": "latest"
+  }
+}

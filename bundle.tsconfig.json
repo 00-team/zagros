@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "baseUrl": "./",
+        "rootDir": "./",
+        "outDir": "../dist",
+        "resolveJsonModule": true
+    },
+    "include": ["./"],
+    "exclude": ["*.scss"]
+}

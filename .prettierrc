@@ -1,0 +1,31 @@
+{
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true,
+    "jsxSingleQuote": true,
+    "useTabs": false,
+    "jsxBracketSameLine": false,
+    "arrowParens": "avoid",
+    "overrides": [
+        {
+            "files": ["*.jsonc", "*.yml"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ],
+
+    "importOrderSeparation": true,
+    "importOrder": [
+        "^solid-js",
+        "^@00-team/utils",
+        "<THIRD_PARTY_MODULES>",
+        "^(store)",
+        "^(layout)",
+        "(/?comps/?|/?components/?)",
+        "\\./(?!style)",
+        "/style/",
+        "(/static/|^static)"
+    ]
+}

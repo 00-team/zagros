@@ -1,0 +1,11 @@
+other/
+node_modules/
+dist/
+local/
+old/
+bundle/
+bun.lockb
+libwatch.so
+.ccls-cache/
+*.o
+package-lock.json

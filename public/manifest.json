@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+
+    "name": "Zagros",
+    "short_name": "Zagros",
+    "description": "money management.",
+    "version": "0.1.0",
+
+    "action": {
+        "default_icon": "image/icon64.png",
+        "default_popup": "popup/popup.html"
+    },
+
+    "incognito": "split",
+
+    "icons": {
+        "16": "image/icon16.png",
+        "24": "image/icon24.png",
+        "32": "image/icon32.png",
+        "64": "image/icon64.png",
+        "128": "image/icon128.png"
+    },
+
+    "permissions": ["unlimitedStorage", "storage", "downloads"]
+}
