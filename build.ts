@@ -452,7 +452,7 @@ await bundle()
 // update the html
 await update_html()
 
-console.log('start watching files')
+console.log('Start watching files\n')
 
 var changed = new Uint32Array(2)
 while (true) {
