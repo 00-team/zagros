@@ -57,6 +57,8 @@ const DIR_BUNDLE = path_resolve(import.meta.dir, 'bundle/')
 const DIR_DIST = path_resolve(import.meta.dir, 'dist/')
 const DIR_PUBLIC = path_resolve(import.meta.dir, 'public/')
 const BUNDLE_INDEX = path_resolve(DIR_BUNDLE, 'index.js')
+const UPDATE_TS = path_resolve(DIR_DIST, 'latest_update.txt')
+console.log(UPDATE_TS)
 
 if (!Bun.spawnSync(['rm', '-rf', DIR_DIST, DIR_BUNDLE]).success)
     throw new Error('cant delete dirs')
@@ -258,11 +260,11 @@ async function bundle(): Promise<boolean> {
     for (const artifact of result.outputs) {
         if (artifact.kind == 'entry-point' && artifact.hash) {
             if (index_hash != artifact.hash) {
-                Bun.spawnSync([
-                    'rm',
-                    path_resolve(DIR_DIST, 'index.' + index_hash + '.js'),
-                    path_resolve(DIR_DIST, 'index.' + index_hash + '.js.map'),
-                ])
+                // Bun.spawnSync([
+                //     'rm',
+                //     path_resolve(DIR_DIST, 'index.' + index_hash + '.js'),
+                //     path_resolve(DIR_DIST, 'index.' + index_hash + '.js.map'),
+                // ])
                 index_hash = artifact.hash
                 return true
             }
@@ -291,6 +293,7 @@ async function update_html() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Zagros</title>
         <script defer src="index.${index_hash}.js"></script>
+        <script defer src="refresh.js"></script>
         ${content}
     </head>
     <body>
@@ -452,39 +455,52 @@ await bundle()
 // update the html
 await update_html()
 
-console.log('Start watching files\n')
+await Bun.write(UPDATE_TS, new Date().getTime().toString())
 
 var changed = new Uint32Array(2)
+
+async function check_reload(): Promise<'none' | 'script' | 'style'> {
+    if (!watch_check(inotify, ptr(changed))) {
+        return 'none'
+    }
+
+    let [wd, mask] = changed
+    let asset = wd_asset.get(wd)
+    if (!asset) throw new Error('invalid wd: ' + wd)
+
+    if (mask & 0x00008000) {
+        wd_asset.delete(wd)
+        wd = watch_file(asset.path)
+        wd_asset.set(wd, asset)
+        return 'none'
+    }
+
+    let start = performance.now()
+    console.log(`asset \x1b[92m'${asset.dir}/${asset.base}'\x1b[m was changed`)
+    let update = await asset.builder()
+    let took = ~~(performance.now() - start)
+    console.log(`build took: \x1b[93m${took}ms\x1b[m\n`)
+
+    if (!update) return 'none'
+
+    if (asset.rebundle) {
+        if (await bundle()) {
+            await update_html()
+            await Bun.write(UPDATE_TS, new Date().getTime().toString())
+            return 'script'
+        }
+    } else {
+        await update_html()
+        await Bun.write(UPDATE_TS, new Date().getTime().toString())
+        return 'style'
+    }
+
+    return 'none'
+}
+
+console.log('watching files\n')
+
 while (true) {
     Bun.sleepSync(200)
-
-    if (watch_check(inotify, ptr(changed))) {
-        let [wd, mask] = changed
-        let asset = wd_asset.get(wd)
-        if (!asset) throw new Error('invalid wd: ' + wd)
-
-        if (mask & 0x00008000) {
-            wd_asset.delete(wd)
-            wd = watch_file(asset.path)
-            wd_asset.set(wd, asset)
-        } else {
-            let start = performance.now()
-            console.log(
-                `asset \x1b[92m'${asset.dir}/${asset.base}'\x1b[m was changed`
-            )
-            let update = await asset.builder()
-            let took = ~~(performance.now() - start)
-            console.log(`build took: \x1b[93m${took}ms\x1b[m\n`)
-
-            if (update) {
-                if (asset.rebundle) {
-                    if (await bundle()) {
-                        await update_html()
-                    }
-                } else {
-                    await update_html()
-                }
-            }
-        }
-    }
+    await check_reload()
 }
