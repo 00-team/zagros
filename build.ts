@@ -58,7 +58,6 @@ const DIR_DIST = path_resolve(import.meta.dir, 'dist/')
 const DIR_PUBLIC = path_resolve(import.meta.dir, 'public/')
 const BUNDLE_INDEX = path_resolve(DIR_BUNDLE, 'index.js')
 const UPDATE_TS = path_resolve(DIR_DIST, 'latest_update.txt')
-console.log(UPDATE_TS)
 
 if (!Bun.spawnSync(['rm', '-rf', DIR_DIST, DIR_BUNDLE]).success)
     throw new Error('cant delete dirs')

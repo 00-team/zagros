@@ -8,7 +8,7 @@ const Header = () => {
             <div class='logo'>
                 <Logo />
             </div>
-            <div class='status'>hi from Zagros</div>
+            <div class='status'>Zagros Status</div>
             <div></div>
         </div>
     )

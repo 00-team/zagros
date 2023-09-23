@@ -1,0 +1,163 @@
+.loading-container {
+    width: 100%;
+    height: 100%;
+    background: #040404;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .loading {
+        width: 640px;
+        height: 360;
+        perspective: 1500px;
+
+        .shape {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: translateZ(-250px) rotateX(30deg);
+            // animation: shape_rotate 5s forwards infinite alternate;
+
+            @keyframes shape_rotate {
+                from {
+                    transform: translateZ(-250px) rotateX(90deg);
+                }
+                to {
+                    transform: translateZ(-250px) rotateX(-120deg);
+                }
+            }
+
+            .face {
+                position: absolute;
+                // width: 500px;
+                // height: 500px;
+                opacity: 0.6;
+                display: flex;
+                align-items: center;
+                font-size: 40px;
+                justify-content: center;
+
+                &.front {
+                    width: 640px;
+                    height: 360px;
+                    background: red;
+                    transform: rotateY(0deg) translateZ(320px);
+                }
+
+                &.bottom {
+                    width: 640px;
+                    height: 100px;
+                    background: orange;
+                    transform: rotateX(-90deg) translateZ(320px);
+                }
+
+                &.back {
+                    // background: blue;
+                    transform: rotateY(180deg) translateZ(250px);
+                }
+
+                &.top {
+                    // background: green;
+                    transform: rotateX(90deg) translateZ(250px);
+                }
+            }
+        }
+    }
+
+    // .loading {
+    //     // width: 100%;
+    //     // height: 100%;
+    //
+    //     width: 500px;
+    //     height: 500px;
+    //     perspective: 1500px;
+    //
+    //     $tor: -90deg;
+    //     $fro: -80deg;
+    //     $dur: 4s;
+    //
+    //     path {
+    //         opacity: 0.5;
+    //     }
+    //
+    //     .frame {
+    //         width: 100%;
+    //         height: 100%;
+    //         transform-style: preserve-3d;
+    //         // perspective: 600px;
+    //         // animation: frame_rotation $dur both infinite alternate;
+    //
+    //         @keyframes frame_rotation {
+    //             from {
+    //                 transform: rotateX($fro);
+    //             }
+    //             to {
+    //                 transform: rotateX($tor);
+    //             }
+    //         }
+    //
+    //         .bc {
+    //             // transform-box: fill-box;
+    //             // transform-origin: top;
+    //             transform: rotateX(-80deg) translateZ(250px);
+    //             // animation: frame_bc_rotation $dur forwards infinite alternate;
+    //
+    //             @keyframes frame_bc_rotation {
+    //                 from {
+    //                     transform: rotateX(90-$fro);
+    //                 }
+    //                 to {
+    //                     transform: rotateX(90-$tor);
+    //                 }
+    //             }
+    //         }
+    //
+    //         .bl {
+    //             transform-box: fill-box;
+    //             transform-origin: top right;
+    //             transform: skewY(45deg);
+    //             // animation: frame_bl_rotation $dur forwards infinite alternate;
+    //
+    //             @keyframes frame_bl_rotation {
+    //                 from {
+    //                     transform: skewY(45deg) rotateX(90-$fro);
+    //                 }
+    //                 to {
+    //                     transform: skewY(45deg) rotateX(90-$tor);
+    //                 }
+    //             }
+    //         }
+    //
+    //         .tl {
+    //             transform-box: fill-box;
+    //             transform-origin: bottom right;
+    //             // animation: frame_tl_rotation $dur forwards infinite alternate;
+    //
+    //             @keyframes frame_tl_rotation {
+    //                 from {
+    //                     transform: skewY(-45deg) rotateX(90 + $fro);
+    //                 }
+    //                 to {
+    //                     transform: skewY(-45deg) rotateX(90 + $tor);
+    //                 }
+    //             }
+    //         }
+    //
+    //         .tc {
+    //             transform-box: fill-box;
+    //             transform-origin: bottom;
+    //             // animation: frame_tc_rotation $dur forwards infinite alternate;
+    //
+    //             @keyframes frame_tc_rotation {
+    //                 from {
+    //                     transform: rotateX(90 + $fro);
+    //                 }
+    //                 to {
+    //                     transform: rotateX(90 + $tor);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+}

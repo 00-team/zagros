@@ -12,10 +12,27 @@
 
 body {
     background-color: #040404;
-    background-color: #ff0000;
     color: #f2f2f2;
 
-    --accent-color: #117243; // #00dc7d #143fb4 #f6b232
+    // #1c0700
+    // #241309
+    // #24170b
+    // #2a190f
+    // #2c1e14
+    // #2e1e14
+    // #2f1f15
+    // #2f2014
+    // #3f3129
+    // #e3d4c1
+    // #e5d3c3
+    // #e6d3c2
+    // #e6d4c3
+    // #e8d5c4
+    // #e8d6c4
+    // #e9d8c8
+    // #f4e5d6
+    --white-color: #f4e5d6;
+    --accent-color: #2f2014; // #117243 #00dc7d #143fb4 #f6b232 #3f3129
     --red-color: #e20338;
     font-family: monospace;
 
@@ -24,6 +41,75 @@ body {
         width: 100vw;
         height: 100vh;
         overflow: hidden;
+
+        main {
+            width: 100%;
+            height: 100%;
+
+            .content {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+
+                .timeline {
+                    width: 100%;
+                    height: 100%;
+                    gap: 1rem;
+                    flex-wrap: wrap;
+                    display: flex;
+                    padding: 2rem;
+                    align-items: flex-start;
+                    font-size: 22px;
+
+                    span {
+                        background: #111;
+                    }
+                    // background: darkgray;
+                }
+
+                .config-input {
+                    display: flex;
+                    width: 100%;
+                    height: 100%;
+                    gap: 0.5rem;
+
+                    .config {
+                        width: 100%;
+                        height: 100%;
+                        // background: darkcyan;
+                    }
+
+                    .input {
+                        width: 100%;
+                        height: 100%;
+                        padding: 0.5rem;
+                        border: 2px solid var(--accent-color);
+                        border-radius: 5px;
+                        border-right: 0;
+                        border-bottom: 0;
+
+                        select {
+                            font-size: 22px;
+                            background: #111;
+                            border: 0;
+                            color: #f2f2f2;
+                            text-transform: capitalize;
+                        }
+
+                        button {
+                            border: 2px solid var(--accent-color);
+                            border-radius: 5px;
+                            background: transparent;
+                            color: var(--white-color);
+                            padding: 0 1.2rem;
+                            font-size: 22px;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
