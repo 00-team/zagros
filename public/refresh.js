@@ -1,6 +1,8 @@
+/// <reference lib="dom" />
+/// <reference lib="dom.iterable" />
+
 var refresh_interval = null
 var hot_reload_ws = new WebSocket('ws://localhost:8300')
-var latest_ts = 0
 
 hot_reload_ws.onopen = function () {
     console.log('WebSocket was opened')
@@ -12,14 +14,28 @@ hot_reload_ws.onopen = function () {
             return
         }
         this.send('reload')
-    }, 300)
+    }, 500)
 }
 
-hot_reload_ws.onmessage = async function (e) {
-    let new_ts = parseInt(e.data)
-    if (!latest_ts) {
-        latest_ts = new_ts
-    } else if (new_ts != latest_ts) {
-        location.reload()
+var index_script = document.getElementById('index_script')
+
+hot_reload_ws.onmessage = function (e) {
+    let data = JSON.parse(e.data)
+    if (data.scripts[0] != index_script.attributes.src.value) {
+        clean_up()
+        index_script.remove()
+        index_script = document.createElement('script')
+        index_script.id = 'index_script'
+        index_script.defer = true
+        index_script.src = data.scripts[0]
+        document.head.appendChild(index_script)
     }
+
+    data.styles.forEach(([uid, href]) => {
+        /** @type {HTMLLinkElement} */
+        let link = document.getElementById('stylesheet_' + uid)
+        if (link.attributes.href.value != href) {
+            link.setAttribute('href', href)
+        }
+    })
 }

@@ -1,11 +1,11 @@
 import { transformAsync, TransformOptions } from '@babel/core'
 import ts_preset from '@babel/preset-typescript'
 import solid_preset from 'babel-preset-solid'
-import * as sass from 'sass-embedded'
 import { Import } from 'bun'
 import { dlopen, FFIType, ptr } from 'bun:ffi'
 import { mkdirSync } from 'fs'
 import { parse as path_parse, resolve as path_resolve } from 'path'
+import { compileStringAsync as sass_compile } from 'sass-embedded'
 
 const {
     symbols: { watch_init, watch_check, watch_add },
@@ -57,7 +57,7 @@ const DIR_BUNDLE = path_resolve(import.meta.dir, 'bundle/')
 const DIR_DIST = path_resolve(import.meta.dir, 'dist/')
 const DIR_PUBLIC = path_resolve(import.meta.dir, 'public/')
 const BUNDLE_INDEX = path_resolve(DIR_BUNDLE, 'index.js')
-const UPDATE_TS = path_resolve(DIR_DIST, 'latest_update.txt')
+const LT_ASSETS = path_resolve(DIR_DIST, 'latest_assets.json')
 
 if (!Bun.spawnSync(['rm', '-rf', DIR_DIST, DIR_BUNDLE]).success)
     throw new Error('cant delete dirs')
@@ -69,9 +69,10 @@ copy(
     path_resolve(DIR_BUNDLE, 'tsconfig.json')
 )
 
-Bun.spawnSync(['cp', '-T', '-r', DIR_PUBLIC, DIR_DIST])
+Bun.spawnSync(['cp', '-T', '-r', '-f', DIR_PUBLIC, DIR_DIST])
 
 type Asset = {
+    uid: number
     pub: string
     dir: string
     ext: string
@@ -93,6 +94,27 @@ type Asset = {
 const wd_asset: Map<number, Asset> = new Map()
 const pd_asset: Set<string> = new Set()
 
+let wd = watch_file(path_resolve(DIR_PUBLIC, 'refresh.js'))
+wd_asset.set(wd, {
+    uid: wd_asset.size,
+    path: path_resolve(DIR_PUBLIC, 'refresh.js'),
+    dir: 'public',
+    rebundle: true,
+    ext: 'js',
+    pub: '',
+    base: 'refresh.js',
+    dist: '',
+    hash: '',
+    name: '',
+    type: 'script',
+    async builder() {
+        Bun.spawnSync(['cp', '-f', this.path, DIR_DIST])
+        return true
+    },
+    src_dir: '',
+    dist_dir: '',
+})
+
 const babel_opt: TransformOptions = {
     babelrc: false,
     configFile: false,
@@ -103,10 +125,24 @@ const babel_opt: TransformOptions = {
     ],
 }
 
+async function update_lt_assets() {
+    let assets = {
+        scripts: ['index.' + index_hash + '.js'],
+        styles: [] as [number, string][],
+    }
+
+    for (const [, asset] of wd_asset.entries()) {
+        if (asset.type != 'style') continue
+        assets.styles.push([asset.uid, asset.pub])
+    }
+
+    await Bun.write(LT_ASSETS, JSON.stringify(assets))
+}
+
 async function sass_builder(this: Asset) {
     let content = await Bun.file(this.path).text()
 
-    let output = await sass.compileStringAsync(content, {
+    let output = await sass_compile(content, {
         style: 'compressed',
         sourceMap: true,
         sourceMapIncludeSources: true,
@@ -279,7 +315,13 @@ async function update_html() {
 
     for (const [, asset] of wd_asset.entries()) {
         if (asset.type == 'style') {
-            content += `<link rel="stylesheet" href="${asset.pub}" />\n`
+            content += `
+                <link
+                    id="stylesheet_${asset.uid}"
+                    rel="stylesheet"
+                    href="${asset.pub}"
+                />\n
+`
         }
     }
 
@@ -291,7 +333,7 @@ async function update_html() {
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Zagros</title>
-        <script defer src="index.${index_hash}.js"></script>
+        <script id='index_script' defer src="index.${index_hash}.js"></script>
         <script defer src="refresh.js"></script>
         ${content}
     </head>
@@ -316,6 +358,7 @@ function sass_add(path: string): Asset {
 
     pd_asset.add(path)
     const asset: Asset = {
+        uid: wd_asset.size,
         path: path,
         base: info.base,
         name: info.name,
@@ -349,6 +392,7 @@ function tsj_add(path: string, builder: () => Promise<boolean>): Asset {
 
     pd_asset.add(path)
     const asset: Asset = {
+        uid: wd_asset.size,
         path: path,
         base: info.base,
         name: info.name,
@@ -454,7 +498,7 @@ await bundle()
 // update the html
 await update_html()
 
-await Bun.write(UPDATE_TS, new Date().getTime().toString())
+await update_lt_assets()
 
 var changed = new Uint32Array(2)
 
@@ -485,12 +529,13 @@ async function check_reload(): Promise<'none' | 'script' | 'style'> {
     if (asset.rebundle) {
         if (await bundle()) {
             await update_html()
-            await Bun.write(UPDATE_TS, new Date().getTime().toString())
+            await update_lt_assets()
             return 'script'
         }
     } else {
         await update_html()
-        await Bun.write(UPDATE_TS, new Date().getTime().toString())
+
+        await update_lt_assets()
         return 'style'
     }
 

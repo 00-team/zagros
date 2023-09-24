@@ -1,9 +1,7 @@
 import { resolve as path_resolve } from 'path'
 
 const DIR_DIST = path_resolve(import.meta.dir, 'dist/')
-const UPDATE_TS = path_resolve(DIR_DIST, 'latest_update.txt')
-
-// var latest_update = parseInt(await Bun.file(UPDATE_TS).text())
+const LT_ASSETS = path_resolve(DIR_DIST, 'latest_assets.json')
 
 console.log('server is running')
 
@@ -19,8 +17,7 @@ Bun.serve({
     },
     websocket: {
         async message(ws) {
-            let data = await Bun.file(UPDATE_TS).text()
-            ws.sendText(data)
+            ws.sendText(await Bun.file(LT_ASSETS).text())
         },
     },
 })
