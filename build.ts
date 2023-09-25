@@ -157,7 +157,7 @@ async function sass_builder(this: Asset) {
     let filename = `${this.name}.${this.hash}.css`
     let css_path = path_resolve(this.dist, filename)
 
-    Bun.spawnSync(['rm', old_css_path, old_css_path + '.map'])
+    Bun.spawnSync(['rm', '-rf', old_css_path, old_css_path + '.map'])
 
     output.css += '\n\n/*# sourceMappingURL=' + filename + '.map */'
 

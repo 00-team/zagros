@@ -8,9 +8,12 @@ import 'style/index.scss'
 
 import { default_episodes, episode_types, setEpisodes } from 'stores'
 import type { Episode } from 'stores'
+import { Loading } from 'components/Loading'
 
 let selref: HTMLSelectElement
 const App: Component = () => {
+    return <Loading />
+
     return (
         <main>
             <Header />
@@ -47,4 +50,4 @@ const App: Component = () => {
     )
 }
 
-render(() => <App />, document.getElementById('root')!)
+var clean_up = render(() => <App />, document.getElementById('root')!)
