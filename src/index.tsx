@@ -12,7 +12,12 @@ import { Loading } from 'components/Loading'
 
 let selref: HTMLSelectElement
 const App: Component = () => {
-    return <Loading />
+    return (
+        <div>
+            <img src='img.png' />
+            <Loading />
+        </div>
+    )
 
     return (
         <main>

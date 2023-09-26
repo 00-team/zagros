@@ -335,7 +335,10 @@ async function update_html() {
         <title>Zagros</title>
         <script id='index_script' defer src="index.${index_hash}.js"></script>
         <script defer src="refresh.js"></script>
+        
+        <!-- styles -->
         ${content}
+        <!-- end of styles -->
     </head>
     <body>
         <div class="root" id="root"></div>
